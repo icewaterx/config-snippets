@@ -1,0 +1,25 @@
+Convert image from clipboard to base64 encoded data with JavaScript
+http://stackoverflow.com/questions/11194209/convert-image-from-clipboard-to-base64-encoded-data-with-javascript
+<script src="http://cdn.bootcss.com/jquery/2.1.3/jquery.min.js"></script>
+<div contenteditable></div>
+<script>
+
+
+$('div[contenteditable]').bind('paste', function(e) {
+alert(123);
+var data = e.originalEvent.clipboardData.items[0].getAsFile();
+var elem = this;
+var fr = new FileReader;
+
+fr.onloadend = function() {
+var img = new Image;
+img.onload = function() {
+$(elem).append(img);
+};
+img.src = fr.result;
+};
+
+fr.readAsDataURL(data);
+});
+
+</script>

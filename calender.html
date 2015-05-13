@@ -1,0 +1,190 @@
+<style>
+    .calender{
+
+    }
+</style>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<div class="calender">
+    <div class="selectmouth">
+        <a class="lastmonth"> < </a>
+        <input type="text" class="selectdate" value="2014年2月" readonly=readonly >
+        <a class="nextmonth"> > </a>
+    </div>
+    <table class="data_table">
+        <thead>
+        <tr>
+            <td>日</td><td>一</td><td>二</td><td>三</td><td>四</td><td>五</td><td>六</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    (function($){
+        //创建当前日期对象
+        var Odate = new Date();
+
+        //用户选择的 年 月 日 (随用户选择而变化)
+        var thisYear = Odate.getFullYear();
+        var thisMonth = Odate.getMonth() + 1;
+        var thisDay = Odate.getDate();
+
+        //当前年 月 日 (不变)
+        var toYear = Odate.getFullYear();
+        var toMonth = Odate.getMonth() + 1;
+        var toDay = Odate.getDate();
+
+        //保存用户选择的日期
+        var selectday=thisDay; //标记日期
+        var indate=thisDay; //入住日期
+        var inmonth=thisMonth; //入住月份
+        var outdate=thisDay+1; //退房日期
+
+        function getdaysMonth(year,month){ //算某个月的总天数
+            month=parseInt(month,10);   //将字符串数值化
+            var ds=new Date(year,month,0);  //Date(2014,7,0)
+            console.log(ds);  //Thu Jul 31 2014 00:00:00 GMT+0800 (中国标准时间)
+            return ds.getDate();
+        };
+
+        function getFirstday(year,month){ //算某个月的第一天是星期几
+            month=month-1;
+            var ds=new Date(year,month,1);  //Date(2014,6,0)
+            console.log(ds);  //Tue Jul 01 2014 00:00:00 GMT+0800 (中国标准时间)
+            return ds.getDay();
+        };
+
+        function putDaysToTable(days,weekday){ //往日历中填入日期 (每个月的天数days 每个月的第一天星期几weekday)
+            var a=1;
+            for(var j=0;j<6;j++){ //6行
+                for(var i=0;i<7;i++){  //7列 星期
+                    if(j==0&&i<weekday){  //如果是第一行并且小于这个月的第一天星期几 就填空
+                        $(".data_table tbody tr").eq(0).find("td").eq(i).removeClass("usedate").html("");
+                    }else{
+                        if(a<=days){
+                            $(".data_table tbody tr").eq(j).find("td").eq(i).addClass('usedate').html(a);
+                            a++;
+                        }else{
+                            $(".data_table tbody tr").eq(j).find("td").eq(i).removeClass("usedate").html("");
+                            a=days+1;
+                            console.log(a);  //32
+                        }
+                    }
+                }
+            }
+        };
+
+        function markdate(year,month,selectday){ //标记日期
+            var datetxt=year+"年"+month+"月";
+            var toDatetxt=toYear+"年"+toMonth+"月";
+            $(".data_table td").removeClass("tdselect");
+            //用户选择的日期就是今年的年月日
+            if(datetxt==toDatetxt){
+                for(var j=0;j<6;j++){
+                    for(var i=0;i<7;i++){
+                        var tdhtml=$(".data_table tbody tr").eq(j).find("td").eq(i).html();
+                        console.log(tdhtml);
+                        if(tdhtml==selectday){
+                            $(".data_table tbody tr").eq(j).find("td").eq(i).addClass("tdselect");
+                        }
+                    }
+                }
+            }
+        };
+
+        //能预订的日期
+        //类overdate表示过去的日期
+        //类usedate表示将来可选的日期
+        function isOrderDate(thisyear,thismonth,thisday){
+            if(thisyear<toYear){  //用户点击thisYear在++ 当thisYear 小于今年时 也就是选择的是去年
+                $(".data_table tbody td").addClass("overdate");
+                $(".data_table tbody td").removeClass("usedate");
+            }else if(thisyear==toYear){
+                if(thismonth<toMonth){
+                    $(".data_table tbody td").addClass("overdate");
+                    $(".data_table tbody td").removeClass("usedate");
+                }else if(thismonth==toMonth){
+                    for(var j=0;j<6;j++){
+                        for(var i=0;i<7;i++){
+                            var tdhtml=$(".data_table tbody tr").eq(j).find("td").eq(i).html();
+                            if(tdhtml<thisday){  //如果是过去的时间就不能选择
+                                $(".data_table tbody tr").eq(j).find("td").eq(i).addClass("overdate");
+                                $(".data_table tbody tr").eq(j).find("td").eq(i).removeClass("usedate");
+                            }else{
+                                $(".data_table tbody tr").eq(j).find("td").eq(i).removeClass("overdate");
+                            }
+                        }
+                    }
+                }else{
+                    $(".data_table tbody td").removeClass("overdate");
+                }
+            }else{
+                $(".data_table tbody td").removeClass("overdate");
+            }
+        };
+
+        //日期初始填充
+        function initdate(){
+            $(".selectdate").val(thisYear+"年"+thisMonth+"月");
+            var days = getdaysMonth( thisYear, thisMonth );
+            var weekday = getFirstday( thisYear, thisMonth );
+
+            //填充初始化日期到table中
+            putDaysToTable(days,weekday);
+
+            //标记当前日期
+            markdate( thisYear, thisMonth, selectday );
+
+            //可预订日期
+            isOrderDate( thisYear, thisMonth, thisDay );
+        };
+
+        initdate();
+
+        $('.lastmonth').on('click',function(e){
+            thisMonth--;
+            if(thisMonth==0){
+                thisMonth=12;
+                thisYear--;
+            }
+            initdate();
+        });
+
+        $('.nextmonth').on('click',function(e){
+            thisMonth++;
+            if( thisMonth == 13 ){
+                thisMonth = 1;
+                thisYear++;
+            }
+            initdate();
+        });
+
+        $(".data_table tbody").on("click","td.usedate",function(){ //点击日期的效果(注意这里得使用 live的绑定形式 绑定到tbody上)
+            var thishtml=parseInt($(this).html());
+            $(".data_table td").removeClass("tdselect");
+            $(this).addClass("tdselect");
+            selectday=thishtml;
+            alert(selectday);
+        });
+    })(jQuery);
+</script>

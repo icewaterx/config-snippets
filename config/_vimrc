@@ -1,0 +1,282 @@
+"------default settings安装完就有放入设置---------------
+set nocompatible        "关闭兼容模式
+
+"模仿win快捷键,如Ctrl+a 全选, Ctrl+c 复制 Ctrl + v 粘贴等
+source $VIMRUNTIME/vimrc_example.vim
+source $VIMRUNTIME/mswin.vim
+behave mswin
+
+"设置无自动备份文件 如index.php~
+set nobackup
+
+"------自定义设置---------
+"注意set 变量=后面不能有空格
+"设定编码字符集
+set encoding=utf-8              "gvim内部编码
+set termencoding=utf-8          "设置终端编码为UTF8
+set fileencoding=utf-8          "当前编辑的文件编码 cp936就是gbk编码 在末行模式中可以设置当前文件的编码方式:set fileencoding = gbk 直接输入set fileencoding 回车即可查看当前文件编码方式
+"gvim 打开支持编码的文件
+set fileencodings=utf-8,ucs-bom,gb2312,chinese,big5,euc-kr,latinl,gbk,cp936
+
+"设置菜单编码
+set langmenu=zh_CN.utf-8
+
+"解决菜单乱码
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+
+"解决console 输出乱码
+language messages zh_cn.utf-8
+
+autocmd BufEnter * lcd %:p:h
+
+"防止特殊字符无法正常显示
+set ambiwidth =double
+
+"设置字体 记住字体名称间空格用下划线代替
+"set guifont=DejaVu_Sans_Mono:h12:cANSI
+"Monaco, Courier, monospace;
+set guifont=Monaco:h10:cANSI
+
+"显示行号
+set number
+
+"不自动换行
+set nowrap
+
+"自动换行
+"set wrap
+
+"设置tab键长度
+set ts=4
+
+"设置缩进尺寸
+set sw=4
+
+"编辑时将所有的tab替换为空格
+set et   "应该就是设置softtab 和下面的设置一样set expandtab
+
+"设置自动缩进
+set autoindent
+
+"开启智能tab 即按一次backspace就会删除四个空格,即一个tab
+set smarttab
+
+"设置无交换文件
+set noswapfile
+
+"设置没有自动备份文件  注意这里的nobackup 要放在source $VIMRUNTIME/mswin.vim后面 才起作用
+"set nobackup
+set writebackup
+
+"基于autoindent的一些改进
+set smartindent
+set cindent
+
+"使用softtab，即按 tab 键会自动转化为 space 来进行缩进 (插件indentLine必须使用软tab)
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+"这是设置soft tab的关键
+set expandtab
+"对于之前的没有使用softtab的文件添加一个键映射 使用retab进行reset
+nnoremap <f2> :retab<cr>
+
+"设置每一次的滚动值
+set sidescroll=10
+
+"不要vim模仿vi模式，建议设置，否则会有很多不兼容的问题 vim7.4默认已经开启
+"set nocompatible
+
+"在输入要搜索的文字时，vim会实时匹配
+set incsearch
+
+"高亮显示匹配结果
+set hlsearch
+
+"语法高亮
+syntax on
+
+"设置颜色主题有3种写法  颜色主题文件(manuscript默认没有需要单独下载)可以单独下载
+color manuscript
+"colorscheme manuscript
+"colo manuscript
+
+"设置无导航菜单 go=menu 为有导航菜单
+set go=
+
+"显示右边和底部滚动条
+"set go+=rb
+
+"只显示底部滚动条
+set go+=b
+
+"关闭上侧工具栏
+set guioptions-=T
+
+"关闭右侧滚动条 同set go+=b
+"set guioptions-=r
+
+
+"-------插件配置----------
+
+" {{{ Win平台下窗口全屏组件 注意需要这个库文件 gvimfullscreen.dll
+" Alt + Enter 全屏切换
+" Shift + t 降低窗口透明度
+" Shift + y 加大窗口透明度
+" Shift + e 切换Vim是否总在最前面显示
+
+"判断操作系统
+if(has("win32") || has("win95") || has("win64") || has("win16"))
+    let g:iswindows=1
+else
+    let g:iswindows=0
+endif
+
+if has('gui_running') && has('gui_win32') && has('libcall')
+    let g:MyVimLib = 'gvimfullscreen.dll'
+    function! ToggleFullScreen()
+        let s:IsFullScreen = libcallnr("gvimfullscreen.dll", 'ToggleFullScreen', 0)
+        let s:IsFullScreen = libcallnr("gvimfullscreen.dll", 'ToggleFullScreen', 27 + 29*256 + 30*256*256)
+        call libcall(g:MyVimLib, 'ToggleFullScreen', 27 + 29*256 + 30*256*256)
+    endfunction
+
+"   let g:VimAlpha = 245
+    let g:VimAlpha = 255
+    function! SetAlpha(alpha)
+        let g:VimAlpha = g:VimAlpha + a:alpha
+        if g:VimAlpha < 180
+            let g:VimAlpha = 180
+        endif
+        if g:VimAlpha > 255
+            let g:VimAlpha = 255
+        endif
+        call libcall(g:MyVimLib, 'SetAlpha', g:VimAlpha)
+    endfunction
+
+    let g:VimTopMost = 0
+    function! SwitchVimTopMostMode()
+        if g:VimTopMost == 0
+            let g:VimTopMost = 1
+        else
+            let g:VimTopMost = 0
+        endif
+        call libcall(g:MyVimLib, 'EnableTopMost', g:VimTopMost)
+    endfunction
+    "映射 Alt+Enter 切换全屏vim
+    map <a-enter> <esc>:call ToggleFullScreen()<cr>
+    "切换Vim是否在最前面显示
+    nmap <s-e> <esc>:call SwitchVimTopMostMode()<cr>
+    "增加Vim窗体的不透明度
+    nmap <s-t> <esc>:call SetAlpha(10)<cr>
+    "增加Vim窗体的透明度
+    nmap <s-y> <esc>:call SetAlpha(-10)<cr>
+    "Vim启动的时候自动调用InitVim 以去除Vim的白色边框
+    autocmd GUIEnter * call libcallnr(g:MyVimLib, 'InitVim', 0)
+    " 默认设置透明
+    autocmd GUIEnter * call libcallnr(g:MyVimLib, 'SetAlpha', g:VimAlpha)
+endif
+" }}}
+
+
+"智能缩进
+if has("autocmd")
+    filetype plugin indent on "根据文件进行缩进
+    augroup vimrcEx
+        au!
+        autocmd FileType text setlocal textwidth=78
+        autocmd BufReadPost *
+                    \ if line("'\"") > 1 && line("'\"") <= line("$") |
+                    \ exe "normal! g`\"" |
+                    \ endif
+    augroup END
+else
+    "智能缩进，相应的有cindent，官方说autoindent可以支持各种文件的缩进，但是效果会比只支持C/C++的cindent效果会差一点，但笔者并没有看出来
+    set autoindent " always set autoindenting on
+endif " has("autocmd")
+
+
+"设置tab 竖线插件 indentLine https://github.com/Yggdroot/indentLine
+"注意竖线插件必须得是softtab 才起作用
+set list lcs=tab:\\|\  "\后面有一个空格 即一个tab键后都会有一个竖线|
+"设置竖线的颜色
+let g:indentLine_color_gui = '#A4E57E'
+"设置竖线的形状  这里没有成功 注意一定要是UTF-8的编码
+let g:indentLine_char = '|'   " you can also use '|', '┆'and '│'
+
+
+"自动补全插件开启/关闭
+let g:neocomplcache_enable_at_startup = 0
+
+"为了避免 autocomplpop 在光标移动时弹出补全项，在.vimrc中添加：
+let g:AutoComplPop_MappingDriven = 1
+
+"zencode 插件
+let g:user_emmet_install_global = 0
+autocmd FileType html,css,php EmmetInstall    "设置只在特定文件类型中生效
+let g:user_emmet_leader_key='<C-l>'       "自定义展开快捷键 ctrl+l然后在按,(逗号)
+
+"插件 NERDTree 觉得不好用 将其关闭
+"autocmd vimenter * NERDTree
+
+
+"在浏览器预览 for win32  http://www.fantxi.com/blog/archives/vim-view-in-browser-func/
+"使用F4+cr键在chrome浏览器中打开
+function! ViewInBrowser(name)
+    let file = expand("%:p")
+    exec ":update " . file
+    let l:browsers = {
+        \"cr":"D:/Users/Administrator/AppData/Local/Google/Chrome/Application/chrome.exe",
+        \"ff":"E:/Program Files/Mozilla Firefox/firefox.exe",
+        \"op":"D:/WebDevelopment/Browser/Opera/opera.exe",
+        \"ie":"D:/progra~1/intern~1/iexplore.exe",
+        \"ie6":"D:/WebDevelopment/Browser/IETester/IETester.exe -ie6",
+        \"ie7":"D:/WebDevelopment/Browser/IETester/IETester.exe -ie7",
+        \"ie8":"D:/WebDevelopment/Browser/IETester/IETester.exe -ie8",
+        \"ie9":"D:/WebDevelopment/Browser/IETester/IETester.exe -ie9",
+        \"iea":"D:/WebDevelopment/Browser/IETester/IETester.exe -all"
+    \}
+    let htdocs='E:'
+    let strpos = stridx(file, substitute(htdocs, '\\\\', '\', "g"))
+    if strpos == -1
+       exec ":silent !start ". l:browsers[a:name] ." file://" . file
+    else
+        let file=substitute(file, htdocs, "http://127.0.0.1:8077/", "g")
+        let file=substitute(file, '\\', '/', "g")
+        exec ":silent !start ". l:browsers[a:name] file
+    endif
+endfunction
+nmap <f4>cr :call ViewInBrowser("cr")<cr>
+nmap <f4>ff :call ViewInBrowser("ff")<cr>
+nmap <f4>op :call ViewInBrowser("op")<cr>
+nmap <f4>ie :call ViewInBrowser("ie")<cr>
+nmap <f4>ie6 :call ViewInBrowser("ie6")<cr>
+
+
+
+
+"文件比较 注意7.4版本在windows下比较文件会报错,原因网上说是安装目录有空格
+set diffexpr=MyDiff()
+function MyDiff()
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  let eq = ''
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      let cmd = '""' . $VIMRUNTIME . '\diff"'
+      let eq = '"'
+  else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+endfunction

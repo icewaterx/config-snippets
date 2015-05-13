@@ -1,0 +1,76 @@
+{
+	"auto_complete_commit_on_tab": false,
+	"auto_match_enabled": true,
+	"bold_folder_labels": false,
+	"caret_style": "phase",
+	"color_scheme": "Packages/User/Theme - Default/Espresso Soda for me.tmTheme",
+	"copy_with_empty_selection": false,
+	"default_encoding": "UTF-8",
+	"detect_indentation": true,
+	"detect_slow_plugins": true,
+	"drag_text": false,
+	"draw_white_space": "wide",
+	"file_exclude_patterns":
+	[
+		"*.zip",
+		"*.rar",
+		"*.map",
+		"*.bat"
+	],
+	"folder_exclude_patterns":
+	[
+		".svn",
+		".git",
+		".hg",
+		"CVS",
+		".sass-cache",
+		"node_modules"
+	],
+	"font_face": "Consolas",
+	"font_options":
+	[
+		"subpixel_antialias"
+	],
+	"font_size": 11,
+	"fonts_list":
+	[
+		"Consolas",
+		"DejaVu Sans Mono",
+		"Monaco"
+	],
+	"gutter": true,
+	"highlight_line": true,
+	"hot_exit": true,
+	"ignored_packages":
+	[
+		"Vintage",
+		"Vintageous",
+		"SublimeBlockCursor",
+		"Color Highlighter"
+	],
+	"indent_to_bracket": true,
+	"line_padding_bottom": 2,
+	"line_padding_top": 1,
+	"margin": 0,
+	"move_to_limit_on_up_down": true,
+	"preview_on_click": false,
+	"show_encoding": true,
+	"show_line_endings": true,
+	"soda_classic_tabs": true,
+	"soda_folder_icons": false,
+	"tab_size": 2,
+	"theme": "Soda Light for me.sublime-theme",
+	"theme_list":
+	[
+		"Soda Light.sublime-theme",
+		"Soda Dark.sublime-theme",
+		"Soda Dark for me.sublime-theme",
+		"Soda Light for me.sublime-theme"
+	],
+	"translate_tabs_to_spaces": true,
+	"update_check": false,
+	"use_tab_stops": true,
+	"wide_caret": true,
+	"word_separators": "./\\()\"':,;<>~!@%^&*|+=[]{}`~?",
+	"word_wrap": false
+}
